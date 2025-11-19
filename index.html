@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colmena - Sistema de Bodega Agrícola</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginScreen">
+        <div class="login-left">
+            <div class="logo">🐝</div>
+            <h1>Colmena</h1>
+            <h2>Sistema de Gestión Agrícola Integral</h2>
+            <p style="margin-top: 2rem; opacity: 0.9;">
+                Control total de tu bodega agrícola: insumos, maquinaria, facturas y préstamos en un solo lugar.
+            </p>
+        </div>
+        <div class="login-right">
+            <h2>Iniciar Sesión</h2>
+            <p style="color: #666; margin-bottom: 2rem;">Ingresa tus credenciales para acceder al sistema</p>
+            
+            <div class="blocked-message" id="blockedMessage">
+                ⚠️ Cuenta bloqueada temporalmente por demasiados intentos fallidos. 
+                <a href="#" onclick="showResetPassword()">¿Olvidaste tu contraseña?</a>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email">Correo Electrónico</label>
+                    <input type="email" id="email" required placeholder="tu@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" required placeholder="Ingresa tu contraseña">
+                </div>
+                <div style="text-align: right; margin-bottom: 1rem;">
+                    <a href="#" onclick="showResetPassword()" style="color: var(--primary); text-decoration: none;">
+                        ¿Olvidaste tu contraseña?
+                    </a>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+                    Ingresar al Sistema
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="app-container" id="appContainer">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-left">
+                <h1>🐝 Colmena</h1>
+                <div class="user-info">
+                    <span id="userEmail">usuario@empresa.com</span>
+                    <span class="user-badge admin" id="userBadge">Administrador</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()">🌙</button>
+                <button class="btn btn-secondary" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+
+        <div class="app-content">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <ul class="nav-links">
+                    <li class="active" onclick="showSection('dashboard')">📊 Dashboard</li>
+                    
+                    <div class="nav-section admin-only">GESTIÓN DE INVENTARIO</div>
+                    <li class="admin-only" onclick="showSection('inventory')">📦 Inventario General</li>
+                    <li onclick="showSection('products')">🛒 Productos Disponibles</li>
+                    <li class="admin-only" onclick="showSection('machinery')">🚜 Maquinaria Pesada</li>
+                    <li class="admin-only" onclick="showSection('supplies')">🌱 Insumos de Siembra</li>
+                    
+                    <div class="nav-section admin-only">OPERACIONES</div>
+                    <li class="admin-only" onclick="showSection('invoices')">🧾 Facturas de Compra</li>
+                    <li class="admin-only" onclick="showSection('rentals')">🔄 Préstamos Activos</li>
+                    <li class="client-only" onclick="showSection('requests')">📋 Mis Solicitudes</li>
+                    <li class="client-only" onclick="showSection('myRentals')">📋 Mis Préstamos</li>
+                    <li class="client-only" onclick="showSection('myInvoices')">🧾 Mis Facturas</li>
+                    
+                    <div class="nav-section admin-only">REPORTES</div>
+                    <li class="admin-only" onclick="showSection('reports')">📈 Reportes y Análisis</li>
+                    <li class="admin-only" onclick="showSection('alerts')">⚠️ Alertas de Stock</li>
+                </ul>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- Dashboard Section -->
+                <div id="dashboardSection" class="content-section">
+                    <div class="welcome-banner">
+                        <h1>Bienvenido de vuelta, <span id="userName">Administrador</span></h1>
+                        <p>Resumen general del estado de la bodega agrícola</p>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">156</div>
+                            <div class="stat-label">Productos en Inventario</div>
+                        </div>
+                        <div class="stat-card machinery">
+                            <div class="stat-number">23</div>
+                            <div class="stat-label">Máquinas Disponibles</div>
+                        </div>
+                        <div class="stat-card supplies">
+                            <div class="stat-number">45</div>
+                            <div class="stat-label">Insumos de Siembra</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">12</div>
+                            <div class="stat-label">Préstamos Activos</div>
+                        </div>
+                    </div>
+
+                    <div class="tabs">
+                        <div class="tab active" onclick="showTab('recentActivity')">Actividad Reciente</div>
+                        <div class="tab" onclick="showTab('alerts')">Alertas Importantes</div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Descripción</th>
+                                    <th>Usuario</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>15/11/2024</td>
+                                    <td>Préstamo</td>
+                                    <td>Tractor John Deere 6120M - AgroSur S.A.</td>
+                                    <td>cliente@agrosur.com</td>
+                                    <td><span class="status rented">En Préstamo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>14/11/2024</td>
+                                    <td>Compra</td>
+                                    <td>Factura #F-2024-00123 - Semillas Trigo</td>
+                                    <td>admin@colmena.com</td>
+                                    <td><span class="status available">Registrada</span></td>
+                                </tr>
+                                <tr>
+                                    <td>13/11/2024</td>
+                                    <td>Alerta</td>
+                                    <td>Stock bajo en Fertilizante NPK</td>
+                                    <td>Sistema</td>
+                                    <td><span class="status maintenance">Pendiente</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Products Section (Client View) -->
+                <div id="productsSection" class="content-section" style="display: none;">
+                    <h2>Productos Disponibles</h2>
+                    <p>Explora y solicita los productos que necesites para tu empresa</p>
+
+                    <div class="filter-section">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Buscar Producto</label>
+                            <input type="text" id="searchClientProduct" placeholder="Nombre del producto..." onkeyup="filterClientProducts()">
+                        </div>
+                        <div class="form-group" style="width: 200px;">
+                            <label>Categoría</label>
+                            <select id="clientCategoryFilter" onchange="filterClientProducts()">
+                                <option value="">Todas las categorías</option>
+                                <option value="maquinaria">Maquinaria</option>
+                                <option value="insumos">Insumos</option>
+                                <option value="herramientas">Herramientas</option>
+                                <option value="semillas">Semillas</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="width: 200px;">
+                            <label>Tipo</label>
+                            <select id="clientTypeFilter" onchange="filterClientProducts()">
+                                <option value="">Todos</option>
+                                <option value="alquiler">Solo Alquiler</option>
+                                <option value="venta">Solo Venta</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="products-grid">
+                        <div class="product-card" data-category="maquinaria" data-type="alquiler">
+                            <div class="product-image">🚜</div>
+                            <div class="product-info">
+                                <h3>Tractor John Deere 6120M</h3>
+                                <p class="product-description">Tractor agrícola de 120HP, ideal para labranza y cosecha</p>
+                                <div class="product-details">
+                                    <span class="product-price">$500/día</span>
+                                    <span class="product-stock available">Disponible</span>
+                                </div>
+                                <button class="btn btn-primary" onclick="requestProduct('PROD-001')">Solicitar Alquiler</button>
+                            </div>
+                        </div>
+
+                        <div class="product-card" data-category="insumos" data-type="venta">
+                            <div class="product-image">🌱</div>
+                            <div class="product-info">
+                                <h3>Fertilizante NPK 15-15-15</h3>
+                                <p class="product-description">Fertilizante balanceado para todo tipo de cultivos</p>
+                                <div class="product-details">
+                                    <span class="product-price">$45/kg</span>
+                                    <span class="product-stock low">Últimas unidades</span>
+                                </div>
+                                <button class="btn btn-primary" onclick="requestProduct('PROD-002')">Solicitar Compra</button>
+                            </div>
+                        </div>
+
+                        <div class="product-card" data-category="semillas" data-type="venta">
+                            <div class="product-image">🌾</div>
+                            <div class="product-info">
+                                <h3>Semillas de Trigo Premium</h3>
+                                <p class="product-description">Semillas certificadas de alto rendimiento</p>
+                                <div class="product-details">
+                                    <span class="product-price">$120/saco</span>
+                                    <span class="product-stock available">Disponible</span>
+                                </div>
+                                <button class="btn btn-primary" onclick="requestProduct('PROD-003')">Solicitar Compra</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Inventory Section (Admin View) -->
+                <div id="inventorySection" class="content-section" style="display: none;">
+                    <h2>Gestión de Inventario</h2>
+                    <p>Control completo de todos los productos en bodega</p>
+
+                    <div class="filter-section">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Buscar Producto</label>
+                            <input type="text" id="searchProduct" placeholder="Nombre o ID del producto..." onkeyup="filterProducts()">
+                        </div>
+                        <div class="form-group" style="width: 200px;">
+                            <label>Categoría</label>
+                            <select id="categoryFilter" onchange="filterProducts()">
+                                <option value="">Todas las categorías</option>
+                                <option value="maquinaria">Maquinaria</option>
+                                <option value="insumos">Insumos</option>
+                                <option value="herramientas">Herramientas</option>
+                                <option value="semillas">Semillas</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="width: 200px;">
+                            <label>Estado Stock</label>
+                            <select id="stockFilter" onchange="filterProducts()">
+                                <option value="">Todos</option>
+                                <option value="disponible">Disponible</option>
+                                <option value="bajo">Stock Bajo</option>
+                                <option value="agotado">Agotado</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="showAddProductModal()">+ Agregar Producto</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="productsTable">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Categoría</th>
+                                    <th>Stock Actual</th>
+                                    <th>Stock Mínimo</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-id="PROD-001" data-category="maquinaria" data-stock="disponible">
+                                    <td>PROD-001</td>
+                                    <td>Tractor John Deere 6120M</td>
+                                    <td>Maquinaria</td>
+                                    <td>5</td>
+                                    <td>2</td>
+                                    <td><span class="status available">Disponible</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" onclick="showMovementHistory('PROD-001')">Historial</button>
+                                        <button class="btn btn-secondary btn-sm" onclick="editProduct('PROD-001')">Editar</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteProduct('PROD-001')">Eliminar</button>
+                                    </td>
+                                </tr>
+                                <tr data-id="PROD-002" data-category="insumos" data-stock="bajo">
+                                    <td>PROD-002</td>
+                                    <td>Fertilizante NPK 15-15-15</td>
+                                    <td>Insumos</td>
+                                    <td>15</td>
+                                    <td>20</td>
+                                    <td><span class="status maintenance">Stock Bajo</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" onclick="showMovementHistory('PROD-002')">Historial</button>
+                                        <button class="btn btn-secondary btn-sm" onclick="editProduct('PROD-002')">Editar</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteProduct('PROD-002')">Eliminar</button>
+                                    </td>
+                                </tr>
+                                <tr data-id="PROD-003" data-category="semillas" data-stock="agotado">
+                                    <td>PROD-003</td>
+                                    <td>Semillas de Trigo Premium</td>
+                                    <td>Semillas</td>
+                                    <td>0</td>
+                                    <td>100</td>
+                                    <td><span class="status rented">Agotado</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" onclick="showMovementHistory('PROD-003')">Historial</button>
+                                        <button class="btn btn-secondary btn-sm" onclick="editProduct('PROD-003')">Editar</button>
+                                        <button class="btn btn-danger btn-sm" onclick="deleteProduct('PROD-003')">Eliminar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Invoices Section -->
+                <div id="invoicesSection" class="content-section" style="display: none;">
+                    <h2>Gestión de Facturas</h2>
+                    <p>Registro y control de facturas de compra</p>
+
+                    <div class="filter-section">
+                        <button class="btn btn-primary" onclick="manageInvoices('compra', 'COMP-2024-001')">+ Gestionar Facturas</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>N° Factura</th>
+                                    <th>Proveedor</th>
+                                    <th>Fecha</th>
+                                    <th>Monto</th>
+                                    <th>Productos</th>
+                                    <th>Factura Digital</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>F-2024-00123</td>
+                                    <td>AgroSupply S.A.</td>
+                                    <td>15/11/2024</td>
+                                    <td>$12,500</td>
+                                    <td>Semillas, Fertilizantes</td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm" onclick="viewInvoice('factura_F-2024-00123', 0)">📎 Ver Factura</button>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-primary btn-sm" onclick="manageInvoices('factura', 'F-2024-00123')">Gestionar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Maquinaria Pesada Section -->
+                <div id="machinerySection" class="content-section" style="display: none;">
+                    <h2>Maquinaria Pesada</h2>
+                    <p>Gestión de equipos y maquinaria agrícola</p>
+
+                    <div class="filter-section">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Buscar Maquinaria</label>
+                            <input type="text" placeholder="Nombre o modelo..." onkeyup="filterMachinery()">
+                        </div>
+                        <div class="form-group" style="width: 200px;">
+                            <label>Estado</label>
+                            <select onchange="filterMachinery()">
+                                <option value="">Todos</option>
+                                <option value="disponible">Disponible</option>
+                                <option value="alquilado">Alquilado</option>
+                                <option value="mantenimiento">En Mantenimiento</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="width: 200px;">
+                            <label>Tipo</label>
+                            <select onchange="filterMachinery()">
+                                <option value="">Todos</option>
+                                <option value="tractor">Tractores</option>
+                                <option value="cosechadora">Cosechadoras</option>
+                                <option value="pulverizadora">Pulverizadoras</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">15</div>
+                            <div class="stat-label">Tractores</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">8</div>
+                            <div class="stat-label">Cosechadoras</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">5</div>
+                            <div class="stat-label">En Mantenimiento</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">12</div>
+                            <div class="stat-label">Alquilados</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Equipo</th>
+                                    <th>Modelo</th>
+                                    <th>Estado</th>
+                                    <th>Ubicación</th>
+                                    <th>Próximo Mantenimiento</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>TRAC-001</td>
+                                    <td>Tractor John Deere</td>
+                                    <td>6120M</td>
+                                    <td><span class="status available">Disponible</span></td>
+                                    <td>Bodega A</td>
+                                    <td>15/12/2024</td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" onclick="showMovementHistory('TRAC-001')">Historial</button>
+                                        <button class="btn btn-secondary btn-sm">Editar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>COSH-002</td>
+                                    <td>Cosechadora New Holland</td>
+                                    <td>CR8.90</td>
+                                    <td><span class="status rented">Alquilada</span></td>
+                                    <td>Campo AgroSur</td>
+                                    <td>20/01/2025</td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" onclick="showMovementHistory('COSH-002')">Historial</button>
+                                        <button class="btn btn-secondary btn-sm">Editar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>PULV-003</td>
+                                    <td>Pulverizadora</td>
+                                    <td>PS-500</td>
+                                    <td><span class="status maintenance">Mantenimiento</span></td>
+                                    <td>Taller Central</td>
+                                    <td>10/12/2024</td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" onclick="showMovementHistory('PULV-003')">Historial</button>
+                                        <button class="btn btn-secondary btn-sm">Editar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Insumos de Siembra Section -->
+                <div id="suppliesSection" class="content-section" style="display: none;">
+                    <h2>Insumos de Siembra</h2>
+                    <p>Control de semillas, fertilizantes y productos fitosanitarios</p>
+
+                    <div class="filter-section">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Buscar Insumo</label>
+                            <input type="text" placeholder="Nombre del insumo..." onkeyup="filterSupplies()">
+                        </div>
+                        <div class="form-group" style="width: 200px;">
+                            <label>Tipo</label>
+                            <select onchange="filterSupplies()">
+                                <option value="">Todos</option>
+                                <option value="semilla">Semillas</option>
+                                <option value="fertilizante">Fertilizantes</option>
+                                <option value="herbicida">Herbicidas</option>
+                                <option value="fungicida">Fungicidas</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="width: 200px;">
+                            <label>Estado Stock</label>
+                            <select onchange="filterSupplies()">
+                                <option value="">Todos</option>
+                                <option value="optimo">Óptimo</option>
+                                <option value="bajo">Stock Bajo</option>
+                                <option value="critico">Stock Crítico</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">28</div>
+                            <div class="stat-label">Tipos de Semillas</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">15</div>
+                            <div class="stat-label">Fertilizantes</div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-number">7</div>
+                            <div class="stat-label">Stock Bajo</div>
+                        </div>
+                        <div class="stat-card danger">
+                            <div class="stat-number">3</div>
+                            <div class="stat-label">Stock Crítico</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Insumo</th>
+                                    <th>Tipo</th>
+                                    <th>Stock Actual</th>
+                                    <th>Stock Mínimo</th>
+                                    <th>Unidad</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>SEM-001</td>
+                                    <td>Semilla Trigo Premium</td>
+                                    <td>Semilla</td>
+                                    <td>1,200 kg</td>
+                                    <td>500 kg</td>
+                                    <td>Kilogramos</td>
+                                    <td><span class="status available">Óptimo</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm">Historial</button>
+                                        <button class="btn btn-secondary btn-sm">Editar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>FERT-005</td>
+                                    <td>Fertilizante NPK</td>
+                                    <td>Fertilizante</td>
+                                    <td>45 kg</td>
+                                    <td>100 kg</td>
+                                    <td>Kilogramos</td>
+                                    <td><span class="status maintenance">Stock Bajo</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm">Historial</button>
+                                        <button class="btn btn-secondary btn-sm">Editar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>HERB-012</td>
+                                    <td>Herbicida Glifosato</td>
+                                    <td>Herbicida</td>
+                                    <td>8 L</td>
+                                    <td>20 L</td>
+                                    <td>Litros</td>
+                                    <td><span class="status rented">Stock Crítico</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm">Historial</button>
+                                        <button class="btn btn-secondary btn-sm">Editar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Préstamos Activos Section -->
+                <div id="rentalsSection" class="content-section" style="display: none;">
+                    <h2>Préstamos Activos</h2>
+                    <p>Seguimiento de equipos y productos en préstamo a clientes</p>
+
+                    <div class="filter-section">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Buscar Préstamo</label>
+                            <input type="text" placeholder="Cliente o producto..." onkeyup="filterRentals()">
+                        </div>
+                        <div class="form-group" style="width: 200px;">
+                            <label>Estado</label>
+                            <select onchange="filterRentals()">
+                                <option value="">Todos</option>
+                                <option value="activo">Activo</option>
+                                <option value="por_vencer">Por Vencer</option>
+                                <option value="vencido">Vencido</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="width: 200px;">
+                            <label>Tipo</label>
+                            <select onchange="filterRentals()">
+                                <option value="">Todos</option>
+                                <option value="maquinaria">Maquinaria</option>
+                                <option value="insumo">Insumos</option>
+                                <option value="herramienta">Herramientas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">18</div>
+                            <div class="stat-label">Préstamos Activos</div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-number">5</div>
+                            <div class="stat-label">Por Vencer</div>
+                        </div>
+                        <div class="stat-card danger">
+                            <div class="stat-number">2</div>
+                            <div class="stat-label">Vencidos</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">$45,680</div>
+                            <div class="stat-label">Ingresos Mensuales</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Préstamo</th>
+                                    <th>Cliente</th>
+                                    <th>Producto</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Fecha Término</th>
+                                    <th>Días Restantes</th>
+                                    <th>Valor</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>PREST-2024-156</td>
+                                    <td>AgroSur S.A.</td>
+                                    <td>Tractor John Deere 6120M</td>
+                                    <td>10/11/2024</td>
+                                    <td>24/11/2024</td>
+                                    <td>3 días</td>
+                                    <td>$7,000</td>
+                                    <td><span class="status available">Activo</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" onclick="manageInvoices('prestamo', 'PREST-2024-156')">Facturas</button>
+                                        <button class="btn btn-secondary btn-sm">Extender</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>PREST-2024-157</td>
+                                    <td>Campo Fértil Ltda.</td>
+                                    <td>Cosechadora New Holland</td>
+                                    <td>05/11/2024</td>
+                                    <td>20/11/2024</td>
+                                    <td>-2 días</td>
+                                    <td>$12,500</td>
+                                    <td><span class="status rented">Vencido</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" onclick="manageInvoices('prestamo', 'PREST-2024-157')">Facturas</button>
+                                        <button class="btn btn-danger btn-sm">Recuperar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>PREST-2024-158</td>
+                                    <td>Viña Santa María</td>
+                                    <td>Pulverizadora PS-500</td>
+                                    <td>12/11/2024</td>
+                                    <td>26/11/2024</td>
+                                    <td>1 día</td>
+                                    <td>$3,200</td>
+                                    <td><span class="status maintenance">Por Vencer</span></td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" onclick="manageInvoices('prestamo', 'PREST-2024-158')">Facturas</button>
+                                        <button class="btn btn-warning btn-sm">Notificar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Reportes y Análisis Section -->
+                <div id="reportsSection" class="content-section" style="display: none;">
+                    <h2>Reportes y Análisis</h2>
+                    <p>Análisis detallado del rendimiento y operaciones de la bodega</p>
+
+                    <div class="tabs">
+                        <div class="tab active" onclick="showReportTab('ventas')">Ventas y Alquileres</div>
+                        <div class="tab" onclick="showReportTab('inventario')">Estado de Inventario</div>
+                        <div class="tab" onclick="showReportTab('clientes')">Comportamiento de Clientes</div>
+                        <div class="tab" onclick="showReportTab('financiero')">Análisis Financiero</div>
+                    </div>
+
+                    <div class="reports-grid">
+                        <div class="report-card large">
+                            <h3>Ingresos Mensuales</h3>
+                            <div class="chart-placeholder">
+                                <p>📊 Gráfico de ingresos por mes</p>
+                                <div class="chart-bars">
+                                    <div class="chart-bar" style="height: 60%; background: var(--primary);">Ene</div>
+                                    <div class="chart-bar" style="height: 75%; background: var(--primary);">Feb</div>
+                                    <div class="chart-bar" style="height: 80%; background: var(--primary);">Mar</div>
+                                    <div class="chart-bar" style="height: 65%; background: var(--primary);">Abr</div>
+                                    <div class="chart-bar" style="height: 90%; background: var(--primary);">May</div>
+                                    <div class="chart-bar" style="height: 95%; background: var(--primary);">Jun</div>
+                                </div>
+                            </div>
+                            <div class="report-stats">
+                                <div class="stat">
+                                    <span class="stat-value">$245,670</span>
+                                    <span class="stat-label">Total 2024</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value">+15%</span>
+                                    <span class="stat-label">Crecimiento</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="report-card">
+                            <h3>Productos Más Rentables</h3>
+                            <div class="top-products">
+                                <div class="product-rank">
+                                    <span class="rank">1</span>
+                                    <span class="product-name">Tractor 6120M</span>
+                                    <span class="revenue">$89,450</span>
+                                </div>
+                                <div class="product-rank">
+                                    <span class="rank">2</span>
+                                    <span class="product-name">Cosechadora CR8.90</span>
+                                    <span class="revenue">$67,800</span>
+                                </div>
+                                <div class="product-rank">
+                                    <span class="rank">3</span>
+                                    <span class="product-name">Semillas Trigo</span>
+                                    <span class="revenue">$45,120</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="report-card">
+                            <h3>Clientes Principales</h3>
+                            <div class="top-clients">
+                                <div class="client-rank">
+                                    <span class="rank">1</span>
+                                    <span class="client-name">AgroSur S.A.</span>
+                                    <span class="spent">$124,560</span>
+                                </div>
+                                <div class="client-rank">
+                                    <span class="rank">2</span>
+                                    <span class="client-name">Campo Fértil Ltda.</span>
+                                    <span class="spent">$98,340</span>
+                                </div>
+                                <div class="client-rank">
+                                    <span class="rank">3</span>
+                                    <span class="client-name">Viña Santa María</span>
+                                    <span class="spent">$76,890</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="report-card">
+                            <h3>Estado de Inventario</h3>
+                            <div class="inventory-summary">
+                                <div class="inventory-item">
+                                    <span class="label">Productos Óptimos</span>
+                                    <span class="value">128</span>
+                                </div>
+                                <div class="inventory-item warning">
+                                    <span class="label">Stock Bajo</span>
+                                    <span class="value">15</span>
+                                </div>
+                                <div class="inventory-item danger">
+                                    <span class="label">Stock Crítico</span>
+                                    <span class="value">7</span>
+                                </div>
+                                <div class="inventory-item">
+                                    <span class="label">Valor Total</span>
+                                    <span class="value">$1.2M</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alertas de Stock Section -->
+                <div id="alertsSection" class="content-section" style="display: none;">
+                    <h2>Alertas de Stock</h2>
+                    <p>Notificaciones y alertas sobre niveles de inventario</p>
+
+                    <div class="alerts-header">
+                        <div class="alert-stats">
+                            <div class="alert-stat critical">
+                                <span class="count">5</span>
+                                <span class="label">Críticas</span>
+                            </div>
+                            <div class="alert-stat warning">
+                                <span class="count">12</span>
+                                <span class="label">Advertencias</span>
+                            </div>
+                            <div class="alert-stat info">
+                                <span class="count">8</span>
+                                <span class="label">Informativas</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="markAllAsRead()">Marcar Todas como Leídas</button>
+                    </div>
+
+                    <div class="alerts-container">
+                        <div class="alert-item critical">
+                            <div class="alert-icon">🚨</div>
+                            <div class="alert-content">
+                                <h4>Stock Agotado - Semillas Maíz</h4>
+                                <p>Las semillas de maíz híbrido se han agotado. Stock actual: 0 kg (Mínimo: 200 kg)</p>
+                                <span class="alert-date">Hace 2 horas</span>
+                            </div>
+                            <div class="alert-actions">
+                                <button class="btn btn-primary btn-sm" onclick="reorderProduct('SEM-008')">Reordenar</button>
+                                <button class="btn btn-secondary btn-sm" onclick="markAsRead(1)">Marcar Leída</button>
+                            </div>
+                        </div>
+
+                        <div class="alert-item warning">
+                            <div class="alert-icon">⚠️</div>
+                            <div class="alert-content">
+                                <h4>Stock Bajo - Fertilizante NPK</h4>
+                                <p>El fertilizante NPK está por debajo del nivel mínimo. Stock actual: 45 kg (Mínimo: 100 kg)</p>
+                                <span class="alert-date">Hace 1 día</span>
+                            </div>
+                            <div class="alert-actions">
+                                <button class="btn btn-primary btn-sm" onclick="reorderProduct('FERT-005')">Reordenar</button>
+                                <button class="btn btn-secondary btn-sm" onclick="markAsRead(2)">Marcar Leída</button>
+                            </div>
+                        </div>
+
+                        <div class="alert-item info">
+                            <div class="alert-icon">ℹ️</div>
+                            <div class="alert-content">
+                                <h4>Mantenimiento Programado - Tractor TRAC-001</h4>
+                                <p>El tractor John Deere 6120M requiere mantenimiento programado para el 15/12/2024</p>
+                                <span class="alert-date">Hace 3 días</span>
+                            </div>
+                            <div class="alert-actions">
+                                <button class="btn btn-secondary btn-sm" onclick="scheduleMaintenance('TRAC-001')">Programar</button>
+                                <button class="btn btn-secondary btn-sm" onclick="markAsRead(3)">Marcar Leída</button>
+                            </div>
+                        </div>
+
+                        <div class="alert-item critical">
+                            <div class="alert-icon">🚨</div>
+                            <div class="alert-content">
+                                <h4>Préstamo Vencido - Cosechadora COSH-002</h4>
+                                <p>La cosechadora New Holland CR8.90 tiene un préstamo vencido desde hace 2 días</p>
+                                <span class="alert-date">Hace 4 días</span>
+                            </div>
+                            <div class="alert-actions">
+                                <button class="btn btn-danger btn-sm" onclick="recoverEquipment('COSH-002')">Recuperar</button>
+                                <button class="btn btn-secondary btn-sm" onclick="markAsRead(4)">Marcar Leída</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mis Facturas (Cliente) Section -->
+                <div id="myInvoicesSection" class="content-section" style="display: none;">
+                    <h2>Mis Facturas</h2>
+                    <p>Historial y gestión de tus facturas y comprobantes</p>
+
+                    <div class="filter-section">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Buscar Factura</label>
+                            <input type="text" placeholder="Número de factura o descripción..." onkeyup="filterMyInvoices()">
+                        </div>
+                        <div class="form-group" style="width: 200px;">
+                            <label>Estado</label>
+                            <select onchange="filterMyInvoices()">
+                                <option value="">Todos</option>
+                                <option value="pagada">Pagada</option>
+                                <option value="pendiente">Pendiente</option>
+                                <option value="vencida">Vencida</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="width: 200px;">
+                            <label>Mes</label>
+                            <select onchange="filterMyInvoices()">
+                                <option value="">Todos</option>
+                                <option value="noviembre">Noviembre 2024</option>
+                                <option value="octubre">Octubre 2024</option>
+                                <option value="septiembre">Septiembre 2024</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">8</div>
+                            <div class="stat-label">Facturas Totales</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">$45,680</div>
+                            <div class="stat-label">Total Pagado</div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-number">2</div>
+                            <div class="stat-label">Pendientes</div>
+                        </div>
+                        <div class="stat-card danger">
+                            <div class="stat-number">1</div>
+                            <div class="stat-label">Vencidas</div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>N° Factura</th>
+                                    <th>Fecha</th>
+                                    <th>Descripción</th>
+                                    <th>Monto</th>
+                                    <th>Estado</th>
+                                    <th>Vencimiento</th>
+                                    <th>Comprobante</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>F-2024-00156</td>
+                                    <td>15/11/2024</td>
+                                    <td>Alquiler Tractor John Deere 6120M</td>
+                                    <td>$7,000</td>
+                                    <td><span class="status available">Pagada</span></td>
+                                    <td>20/11/2024</td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm" onclick="viewClientInvoice('F-2024-00156')">📎 Descargar</button>
+                                    </td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" onclick="viewInvoiceDetails('F-2024-00156')">Detalles</button>
+                                        <button class="btn btn-secondary btn-sm" onclick="requestCopy('F-2024-00156')">Copia</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>F-2024-00157</td>
+                                    <td>10/11/2024</td>
+                                    <td>Compra Semillas Trigo Premium (500 kg)</td>
+                                    <td>$12,500</td>
+                                    <td><span class="status maintenance">Pendiente</span></td>
+                                    <td>25/11/2024</td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm" onclick="viewClientInvoice('F-2024-00157')">📎 Descargar</button>
+                                    </td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" onclick="viewInvoiceDetails('F-2024-00157')">Detalles</button>
+                                        <button class="btn btn-warning btn-sm" onclick="payInvoice('F-2024-00157')">Pagar</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>F-2024-00123</td>
+                                    <td>05/11/2024</td>
+                                    <td>Alquiler Cosechadora New Holland</td>
+                                    <td>$15,800</td>
+                                    <td><span class="status rented">Vencida</span></td>
+                                    <td>10/11/2024</td>
+                                    <td>
+                                        <button class="btn btn-secondary btn-sm" onclick="viewClientInvoice('F-2024-00123')">📎 Descargar</button>
+                                    </td>
+                                    <td class="action-buttons">
+                                        <button class="btn btn-primary btn-sm" onclick="viewInvoiceDetails('F-2024-00123')">Detalles</button>
+                                        <button class="btn btn-danger btn-sm" onclick="payInvoice('F-2024-00123')">Pagar Ahora</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Secciones de cliente (placeholder) -->
+                <div id="requestsSection" class="content-section" style="display: none;">
+                    <h2>Mis Solicitudes</h2>
+                    <p>Gestión de solicitudes de préstamo y compra</p>
+                    <div class="placeholder-content">
+                        <p>📋 Aquí se mostrarán tus solicitudes de préstamo y compra</p>
+                    </div>
+                </div>
+
+                <div id="myRentalsSection" class="content-section" style="display: none;">
+                    <h2>Mis Préstamos</h2>
+                    <p>Seguimiento de equipos y productos en préstamo</p>
+                    <div class="placeholder-content">
+                        <p>🔄 Aquí se mostrarán tus préstamos activos y historial</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="resetPasswordModal">
+        <div class="modal-content">
+            <h2>Restablecer Contraseña</h2>
+            <p>Ingresa tu correo electrónico para recibir las instrucciones de restablecimiento.</p>
+            <form id="resetPasswordForm">
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" required placeholder="tu@email.com">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('resetPasswordModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Enviar Instrucciones</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="movementHistoryModal">
+        <div class="modal-content">
+            <h2>Historial de Movimientos - <span id="productIdTitle"></span></h2>
+            
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker success"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <h4>Préstamo Aprobado</h4>
+                            <span class="timeline-date">15/11/2024 - 10:30 AM</span>
+                        </div>
+                        <p><strong>Cliente:</strong> AgroSur S.A.</p>
+                        <p><strong>Cantidad:</strong> 1 unidad</p>
+                        <p><strong>Duración:</strong> 7 días</p>
+                        <p><strong>Estado Actual:</strong> <span class="status active">En Préstamo</span></p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-marker info"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <h4>Entrada de Stock</h4>
+                            <span class="timeline-date">10/11/2024 - 09:15 AM</span>
+                        </div>
+                        <p><strong>Proveedor:</strong> John Deere Chile</p>
+                        <p><strong>Cantidad:</strong> 5 unidades</p>
+                        <p><strong>Factura:</strong> F-2024-00123</p>
+                        <p><strong>Responsable:</strong> Admin Colmena</p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-marker warning"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-header">
+                            <h4>Mantenimiento Programado</h4>
+                            <span class="timeline-date">05/11/2024 - 02:00 PM</span>
+                        </div>
+                        <p><strong>Tipo:</strong> Mantenimiento preventivo</p>
+                        <p><strong>Duración:</strong> 3 días</p>
+                        <p><strong>Técnico:</strong> Taller Agrícola Central</p>
+                        <p><strong>Estado:</strong> <span class="status completed">Completado</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('movementHistoryModal')">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="stockValidationModal">
+        <div class="modal-content">
+            <h2>Validación de Stock</h2>
+            <p id="stockValidationMessage"></p>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('stockValidationModal')">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="confirmWithdrawal()">Confirmar Salida</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="requestProductModal">
+        <div class="modal-content">
+            <h2>Solicitar Producto - <span id="requestProductName"></span></h2>
+            <form id="requestProductForm">
+                <div class="form-group">
+                    <label>Tipo de Solicitud</label>
+                    <select id="requestType" required>
+                        <option value="">Seleccionar tipo...</option>
+                        <option value="alquiler">Alquiler</option>
+                        <option value="compra">Compra</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label id="quantityLabel">Cantidad</label>
+                    <input type="number" id="requestQuantity" min="1" required>
+                </div>
+                <div class="form-group" id="durationGroup" style="display: none;">
+                    <label>Duración del Alquiler (días)</label>
+                    <input type="number" id="requestDuration" min="1" value="7">
+                </div>
+                <div class="form-group">
+                    <label>Fecha Requerida</label>
+                    <input type="date" id="requestDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Observaciones</label>
+                    <textarea id="requestNotes" placeholder="Detalles adicionales de tu solicitud..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('requestProductModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Enviar Solicitud</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Editar Producto -->
+    <div class="modal" id="editProductModal">
+        <div class="modal-content">
+            <h2>Editar Producto - <span id="editProductId"></span></h2>
+            <form id="editProductForm">
+                <div class="form-group">
+                    <label>Nombre del Producto</label>
+                    <input type="text" id="editProductName" required>
+                </div>
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <select id="editProductCategory" required>
+                        <option value="">Seleccionar categoría</option>
+                        <option value="maquinaria">Maquinaria</option>
+                        <option value="insumos">Insumos</option>
+                        <option value="herramientas">Herramientas</option>
+                        <option value="semillas">Semillas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Stock Actual</label>
+                    <input type="number" id="editProductStock" required min="0">
+                </div>
+                <div class="form-group">
+                    <label>Stock Mínimo</label>
+                    <input type="number" id="editProductMinStock" required min="0">
+                </div>
+                <div class="form-group">
+                    <label>Precio (opcional)</label>
+                    <input type="number" id="editProductPrice" min="0" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="editProductDescription" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('editProductModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Gestión de Facturas -->
+    <div class="modal" id="invoiceManagementModal">
+        <div class="modal-content">
+            <h2>Gestión de Facturas - <span id="invoiceReference"></span></h2>
+            
+            <div class="invoice-section">
+                <h3>Facturas Adjuntas</h3>
+                <div class="invoice-list" id="invoiceList">
+                    <div class="no-invoices" id="noInvoicesMessage">
+                        <p>No hay facturas adjuntas</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="invoice-section">
+                <h3>Adjuntar Nueva Factura</h3>
+                <div class="file-upload-area" onclick="document.getElementById('invoiceFileInput').click()">
+                    <div class="upload-icon">📎</div>
+                    <p>Haz clic aquí para seleccionar un archivo</p>
+                    <p class="upload-hint">Formatos: PDF, JPG, PNG (Máx. 10MB)</p>
+                    <input type="file" id="invoiceFileInput" accept=".pdf,.jpg,.jpeg,.png" onchange="handleInvoiceFileSelect(this)" style="display: none;">
+                </div>
+                <div id="selectedFileInfo" class="selected-file-info"></div>
+                
+                <div class="form-group">
+                    <label>Descripción de la Factura</label>
+                    <input type="text" id="invoiceDescription" placeholder="Ej: Factura de compra semillas trigo">
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('invoiceManagementModal')">Cancelar</button>
+                <button type="button" class="btn btn-primary" onclick="uploadInvoice()">Adjuntar Factura</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
